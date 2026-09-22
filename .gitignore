@@ -11,3 +11,6 @@ helix-importer-ui
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
+
+# ephemeral local-only DA-page mock used to preview blocks before content is authored
+.local-preview/

@@ -1,0 +1,219 @@
+.api-showcase {
+  display: block;
+  min-height: 220px;
+  padding: 16px;
+  border: 1px solid #dadada;
+  background-color: var(--background-color);
+}
+
+.api-showcase h3 {
+  margin-top: 0;
+}
+
+.api-showcase-badge {
+  display: inline-block;
+  margin: 0 0 16px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #e6f4ea;
+  color: #1e7b34;
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+}
+
+.api-showcase-placeholder {
+  color: var(--dark-color);
+  font-style: italic;
+}
+
+/* search form (proxy variant) */
+
+.api-showcase-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.api-showcase-search-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.api-showcase-search input[type="search"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid #dadada;
+  border-radius: 4px;
+  font-size: var(--body-font-size-xs);
+}
+
+.api-showcase-search button {
+  flex: 0 0 auto;
+  padding: 8px 20px;
+  border: 1px solid var(--link-color);
+  border-radius: 4px;
+  background-color: var(--link-color);
+  color: #fff;
+  font-size: var(--body-font-size-xs);
+  cursor: pointer;
+}
+
+.api-showcase-search button:hover,
+.api-showcase-search button:focus-visible {
+  background-color: var(--link-hover-color);
+  border-color: var(--link-hover-color);
+}
+
+.api-showcase-status {
+  min-height: 1.2em;
+  margin: 0 0 16px;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+}
+
+/* results grid */
+
+.api-showcase-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  min-height: 278px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.api-showcase-result {
+  display: flex;
+  flex-direction: column;
+}
+
+.api-showcase-result img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 185 / 278;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: var(--light-color);
+}
+
+.api-showcase-result-noposter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 185 / 278;
+  border-radius: 4px;
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+  text-align: center;
+}
+
+.api-showcase-result-body {
+  margin-top: 8px;
+}
+
+.api-showcase-result-title {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+}
+
+.api-showcase-result-rating {
+  margin: 4px 0 0;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+}
+
+/* metrics panel (scripts/metrics.js) */
+
+.api-metrics {
+  padding: 16px;
+  border: 1px solid #dadada;
+  border-radius: 4px;
+  background-color: var(--light-color);
+}
+
+.api-metrics-caption {
+  margin: 0 0 12px;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+  overflow-wrap: anywhere;
+}
+
+.api-metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.api-metrics-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.api-metrics-stat-label {
+  color: var(--dark-color);
+  font-size: 13px;
+}
+
+.api-metrics-stat-value {
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+}
+
+.api-metrics-headers,
+.api-metrics-timing {
+  width: 100%;
+  margin-bottom: 12px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.api-metrics-headers th,
+.api-metrics-headers td,
+.api-metrics-timing th,
+.api-metrics-timing td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #dadada;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.api-metrics-headers th,
+.api-metrics-timing th {
+  width: 40%;
+  color: var(--dark-color);
+  font-weight: 400;
+}
+
+.api-metrics-rerun {
+  padding: 6px 16px;
+  border: 1px solid var(--dark-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.api-metrics-rerun:hover,
+.api-metrics-rerun:focus-visible {
+  border-color: var(--link-color);
+  color: var(--link-color);
+}
+
+@media (width >= 900px) {
+  .api-showcase-results {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
