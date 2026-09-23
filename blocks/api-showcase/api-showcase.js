@@ -360,9 +360,12 @@ function decorateAggregate(block, config) {
     .map((k) => `${k}=${encodeURIComponent(params.get(k))}`)
     .join('&');
   const baseUrl = `${apiBase}/api/dashboard${query ? `?${query}` : ''}`;
-  /** A unique `cb` param misses the CDN cache so the edge refetches all three sources. */
+  /**
+   * `fresh=1` tells the function to skip its backend fetch cache (reported back as
+   * `X-Cache-Mode: fresh`); the unique `cb` param also misses the CDN's cached response.
+   */
   const buildUrl = (bypassCache) => (bypassCache
-    ? `${baseUrl}${query ? '&' : '?'}cb=${Date.now()}`
+    ? `${baseUrl}${query ? '&' : '?'}fresh=1&cb=${Date.now()}`
     : baseUrl);
 
   block.innerHTML = '';

@@ -28,6 +28,7 @@ const EXPOSED_HEADERS = [
   'X-Transformed-Bytes',
   'X-Fetched-At',
   'X-Backend-Age',
+  'X-Cache-Mode',
   'Age',
 ];
 
