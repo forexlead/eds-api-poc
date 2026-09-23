@@ -141,7 +141,10 @@ export function createMetricsPanel(apiOrigin, { timingLabels = [] } = {}) {
   rerun.type = 'button';
   rerun.className = 'api-metrics-rerun';
   rerun.textContent = 'Run again';
-  element.append(rerun);
+  const actions = document.createElement('div');
+  actions.className = 'api-metrics-actions';
+  actions.append(rerun);
+  element.append(actions);
 
   /**
    * Updates the panel from a completed fetch. `sinceTs` (a `performance.now()` timestamp
@@ -188,7 +191,14 @@ export function createMetricsPanel(apiOrigin, { timingLabels = [] } = {}) {
     rerun.addEventListener('click', callback);
   }
 
-  return { element, record, onRunAgain };
+  /** Adds a variant-specific control (e.g. a checkbox) next to the "Run again" button. */
+  function addControl(node) {
+    actions.append(node);
+  }
+
+  return {
+    element, record, onRunAgain, addControl,
+  };
 }
 
 export {

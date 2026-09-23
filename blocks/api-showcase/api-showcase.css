@@ -460,6 +460,21 @@
   font-weight: 400;
 }
 
+.api-metrics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.api-metrics-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 .api-metrics-rerun {
   padding: 6px 16px;
   border: 1px solid var(--dark-color);

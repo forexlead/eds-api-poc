@@ -343,6 +343,11 @@ function fillSourceCard(ui, key, source) {
   body.append(el('p', 'api-showcase-source-unavailable', 'This source is unavailable right now; the other sources still rendered.'));
 }
 
+const HEADLINE_PARALLEL = '1 browser request instead of 3';
+const HEADLINE_PARALLEL_DETAIL = 'Latency = slowest source, not the sum.';
+const HEADLINE_CACHED = 'All sources served from edge cache — parallelism savings show on a cold fetch';
+const HEADLINE_CACHED_DETAIL = 'Each source took only a few ms (see Server-Timing), so fixed edge overhead outweighs the parallel saving.';
+
 /**
  * Wires up the Pattern 02 Aggregator variant: one call to `/api/dashboard` fans out to three
  * backends at the edge. Shows a card per source plus totalMs vs sumOfSourcesMs.
@@ -354,14 +359,18 @@ function decorateAggregate(block, config) {
     .filter((k) => params.get(k))
     .map((k) => `${k}=${encodeURIComponent(params.get(k))}`)
     .join('&');
-  const url = `${apiBase}/api/dashboard${query ? `?${query}` : ''}`;
+  const baseUrl = `${apiBase}/api/dashboard${query ? `?${query}` : ''}`;
+  /** A unique `cb` param misses the CDN cache so the edge refetches all three sources. */
+  const buildUrl = (bypassCache) => (bypassCache
+    ? `${baseUrl}${query ? '&' : '?'}cb=${Date.now()}`
+    : baseUrl);
 
   block.innerHTML = '';
   block.append(buildHeading(config.title || 'Aggregator'));
 
   const headline = el('div', 'api-showcase-headline');
-  const headlineMain = el('p', 'api-showcase-headline-main', '1 browser request instead of 3');
-  const headlineDetail = el('p', 'api-showcase-headline-detail', 'Latency = slowest source, not the sum.');
+  const headlineMain = el('p', 'api-showcase-headline-main', HEADLINE_PARALLEL);
+  const headlineDetail = el('p', 'api-showcase-headline-detail', HEADLINE_PARALLEL_DETAIL);
   const comparison = el('dl', 'api-showcase-comparison');
   const totalValue = el('dd', null, '—');
   const sumValue = el('dd', null, '—');
@@ -389,6 +398,23 @@ function decorateAggregate(block, config) {
   const metrics = createMetricsPanel(apiBase, { timingLabels: ['tmdb', 'weather', 'pokemon', 'edge'] });
   block.append(metrics.element);
 
+  const forceFresh = el('label', 'api-metrics-toggle');
+  const forceFreshInput = el('input');
+  forceFreshInput.type = 'checkbox';
+  forceFresh.append(forceFreshInput, ' Force fresh (bypass cache)');
+  metrics.addControl(forceFresh);
+
+  /**
+   * On a warm edge every source is a fetch-cache hit, so the parallel total is dominated by
+   * fixed edge overhead and can meet or exceed the (near-zero) sum — a "backwards" comparison.
+   * Say so instead of claiming a saving; both numbers stay visible either way.
+   */
+  function setHeadline(totalMs, sumMs) {
+    const allCached = Number.isFinite(totalMs) && Number.isFinite(sumMs) && totalMs >= sumMs;
+    headlineMain.textContent = allCached ? HEADLINE_CACHED : HEADLINE_PARALLEL;
+    headlineDetail.textContent = allCached ? HEADLINE_CACHED_DETAIL : HEADLINE_PARALLEL_DETAIL;
+  }
+
   async function load({ fresh = false } = {}) {
     status.textContent = 'Loading…';
     cardList.setAttribute('aria-busy', 'true');
@@ -397,7 +423,7 @@ function decorateAggregate(block, config) {
     let resp = null;
     let data = null;
     try {
-      ({ resp, data } = await fetchJson(url, fresh));
+      ({ resp, data } = await fetchJson(buildUrl(forceFreshInput.checked), fresh));
       metrics.record(resp, startedAt);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -410,6 +436,7 @@ function decorateAggregate(block, config) {
     if (resp?.ok && data) {
       totalValue.textContent = formatMs(data.totalMs);
       sumValue.textContent = formatMs(data.sumOfSourcesMs);
+      setHeadline(data.totalMs, data.sumOfSourcesMs);
       const okCount = AGGREGATE_SOURCES.filter(({ key }) => sources[key]?.status === 'ok').length;
       const saved = data.sumOfSourcesMs - data.totalMs;
       status.textContent = `${okCount} of ${AGGREGATE_SOURCES.length} sources available`
@@ -417,6 +444,7 @@ function decorateAggregate(block, config) {
     } else {
       totalValue.textContent = '—';
       sumValue.textContent = '—';
+      setHeadline(NaN, NaN);
       status.textContent = `Dashboard unavailable right now${resp ? ` (HTTP ${resp.status})` : ''}.`;
     }
     cardList.removeAttribute('aria-busy');
