@@ -21,11 +21,6 @@
   font-weight: 700;
 }
 
-.api-showcase-placeholder {
-  color: var(--dark-color);
-  font-style: italic;
-}
-
 /* search form (proxy variant) */
 
 .api-showcase-search {
@@ -489,6 +484,35 @@
 .api-metrics-rerun:focus-visible {
   border-color: var(--link-color);
   color: var(--link-color);
+}
+
+/* failover variant */
+
+.api-showcase-preset[aria-pressed="true"] {
+  border-color: var(--link-color);
+  background-color: var(--link-color);
+  color: var(--background-color);
+}
+
+.api-showcase-failover-card {
+  min-height: 160px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #dadada;
+  border-radius: 4px;
+}
+
+/* a fallback is the pattern working as designed, so it stays neutral grey — never error red */
+.api-showcase-failover-card.fallback .api-showcase-source-status {
+  background-color: var(--light-color);
+  color: var(--dark-color);
+}
+
+.api-showcase-failover-note {
+  margin: 12px 0 0;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+  font-style: italic;
 }
 
 @media (width >= 900px) {

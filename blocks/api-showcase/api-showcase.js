@@ -13,8 +13,7 @@
 // api-showcase — demonstrates the `api-poc` edge function's four integration patterns
 // (CLAUDE.md "The block: api-showcase"; contract in docs/api-contract.md).
 // Authored as a key/value table: `API Showcase (<variant>)` header, then `endpoint`/`title`
-// rows read with readBlockConfig(). `proxy`, `aggregate` and `transform` are wired up;
-// `failover` is still a placeholder.
+// rows read with readBlockConfig().
 
 import { readBlockConfig } from '../../scripts/aem.js';
 import { getApiBase } from '../../scripts/api-config.js';
@@ -616,17 +615,126 @@ function decorateTransform(block, config) {
   load(initialId);
 }
 
-function decorateStub(block, config, variant) {
+/* ---------- failover (Pattern 04) ---------- */
+
+/** `/api/resilient?mode=` values (docs/api-contract.md), in button order. */
+const FAILOVER_MODES = [
+  { mode: 'ok', label: 'Normal' },
+  { mode: 'fail', label: 'Backend down' },
+  { mode: 'slow', label: 'Backend slow' },
+];
+
+function buildFailoverRow(list, term) {
+  const value = el('dd', null, '—');
+  list.append(el('dt', null, term), value);
+  return value;
+}
+
+/**
+ * Wires up the Pattern 04 Failover variant: Normal / Backend down / Backend slow buttons
+ * against `/api/resilient?mode=`. The function always answers 200 — live data or its bundled
+ * static snapshot — so every outcome renders as a normal card. A fallback is expected
+ * behaviour: it gets a neutral badge and a small note, never an error state.
+ */
+function decorateFailover(block, config) {
+  const apiBase = getApiBase();
+  const endpointMode = paramsFromEndpoint(config.endpoint).get('mode');
+  const initialMode = FAILOVER_MODES.some(({ mode }) => mode === endpointMode) ? endpointMode : 'ok';
+
   block.innerHTML = '';
+  block.append(buildHeading(config.title || 'Failover'));
 
-  const heading = document.createElement('h3');
-  heading.textContent = config.title || variant;
-  block.append(heading);
+  const modes = el('div', 'api-showcase-presets api-showcase-modes');
+  modes.setAttribute('role', 'group');
+  modes.setAttribute('aria-label', 'Backend scenario');
+  const modeButtons = FAILOVER_MODES.map(({ mode, label }) => {
+    const btn = el('button', 'api-showcase-preset', label);
+    btn.type = 'button';
+    btn.dataset.mode = mode;
+    btn.setAttribute('aria-pressed', 'false');
+    modes.append(btn);
+    return btn;
+  });
+  block.append(modes);
 
-  const placeholder = document.createElement('p');
-  placeholder.className = 'api-showcase-placeholder';
-  placeholder.textContent = 'Coming next.';
-  block.append(placeholder);
+  const status = buildStatus();
+  block.append(status);
+
+  const card = el('div', 'api-showcase-failover-card');
+  const cardHeader = el('div', 'api-showcase-source-header');
+  const cardTitle = el('h4', null, 'The Matrix');
+  const badge = el('span', 'api-showcase-source-status', 'loading');
+  cardHeader.append(cardTitle, badge);
+  const facts = el('dl', 'api-showcase-comparison');
+  const servedValue = buildFailoverRow(facts, 'Served');
+  const fallbackValue = buildFailoverRow(facts, 'X-Fallback');
+  const reasonValue = buildFailoverRow(facts, 'Reason');
+  const timeValue = buildFailoverRow(facts, 'Response time');
+  const note = el('p', 'api-showcase-failover-note');
+  note.hidden = true;
+  card.append(cardHeader, facts, note);
+  block.append(card);
+
+  const metrics = createMetricsPanel(apiBase, { timingLabels: ['upstream', 'edge'] });
+  block.append(metrics.element);
+
+  let currentMode = initialMode;
+  let requestSeq = 0;
+
+  async function load(mode, { fresh = false } = {}) {
+    currentMode = mode;
+    requestSeq += 1;
+    const seq = requestSeq;
+    modeButtons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.mode === mode)));
+    const { label } = FAILOVER_MODES.find((m) => m.mode === mode);
+    status.textContent = `${label}: requesting…`;
+    card.setAttribute('aria-busy', 'true');
+    const startedAt = window.performance.now();
+
+    let resp = null;
+    let data = null;
+    try {
+      ({ resp, data } = await fetchJson(`${apiBase}/api/resilient?mode=${mode}`, fresh));
+      metrics.record(resp, startedAt);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('api-showcase failover: resilient request failed', err);
+    }
+    if (seq !== requestSeq) return; // a newer click superseded this one
+    const elapsed = window.performance.now() - startedAt;
+
+    const usable = resp?.ok && data?.data;
+    const fromFallback = usable && data.served !== 'live';
+    const movie = usable ? data.data : null;
+
+    cardTitle.textContent = movie?.year ? `${movie.title} (${movie.year})` : (movie?.title || 'The Matrix');
+    card.classList.toggle('fallback', !usable || fromFallback);
+    badge.textContent = usable ? data.served || 'unknown' : 'no response';
+    servedValue.textContent = usable ? data.served || '—' : '—';
+    fallbackValue.textContent = resp?.headers.get('X-Fallback') ?? '—';
+    reasonValue.textContent = usable ? data.reason ?? 'none' : '—';
+    timeValue.textContent = formatMs(elapsed);
+
+    // Still neutral when nothing usable came back: the demo shows resilience, not failure.
+    note.hidden = usable && !fromFallback;
+    if (!usable) {
+      note.textContent = 'No response from the edge right now. Try again in a moment.';
+    } else if (fromFallback) {
+      note.textContent = `Served from fallback: the backend ${data.reason === 'timeout' ? 'was too slow' : 'was down'}, so the edge returned its bundled snapshot.`;
+    }
+    status.textContent = `${label}: ${usable ? `served ${data.served}` : 'no response'} in ${formatMs(elapsed)}.`;
+    card.removeAttribute('aria-busy');
+  }
+
+  modes.addEventListener('click', (event) => {
+    const btn = event.target.closest('button[data-mode]');
+    if (btn) load(btn.dataset.mode);
+  });
+
+  metrics.onRunAgain(() => load(currentMode, { fresh: true }));
+
+  // Not awaited: the skeleton is already on the page; the fetch must not block rendering.
+  load(initialMode);
 }
 
 export default function decorate(block) {
@@ -641,6 +749,6 @@ export default function decorate(block) {
   } else if (variant === 'transform') {
     decorateTransform(block, config);
   } else {
-    decorateStub(block, config, variant);
+    decorateFailover(block, config);
   }
 }
