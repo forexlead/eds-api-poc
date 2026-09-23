@@ -1,0 +1,1911 @@
+{
+  "generatedAt": "2026-09-23T14:24:49.289Z",
+  "config": {
+    "siteUrl": "https://main--eds-api-poc--forexlead.aem.live",
+    "apiBase": "https://publish-p24773-e1511008.adobeaemcloud.com",
+    "warmLoads": 5,
+    "apiRuns": 20
+  },
+  "pages": [
+    {
+      "path": "/patterns/proxy",
+      "url": "https://main--eds-api-poc--forexlead.aem.live/patterns/proxy",
+      "skipped": false,
+      "har": "evidence/har/patterns-proxy.har",
+      "screenshot": "evidence/screenshots/patterns-proxy.png",
+      "cold": {
+        "status": 200,
+        "wallMs": 2932,
+        "apiRequests": 1,
+        "transferSize": 1775,
+        "encodedBodySize": 1475,
+        "decodedBodySize": 1475,
+        "ttfb": 289.79999999701977,
+        "duration": 363.5,
+        "requests": [
+          {
+            "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+            "transferSize": 1775,
+            "encodedBodySize": 1475,
+            "decodedBodySize": 1475,
+            "ttfb": 289.79999999701977,
+            "duration": 363.5,
+            "headers": {
+              "server-timing": "tmdb;dur=9, edge;dur=11",
+              "x-pattern": "proxy",
+              "x-cache-mode": "cached",
+              "x-fallback": null,
+              "x-original-bytes": null,
+              "x-transformed-bytes": null,
+              "age": "29"
+            }
+          }
+        ]
+      },
+      "warm": [
+        {
+          "status": 200,
+          "wallMs": 2053,
+          "apiRequests": 1,
+          "transferSize": 1775,
+          "encodedBodySize": 1475,
+          "decodedBodySize": 1475,
+          "ttfb": 13.700000002980232,
+          "duration": 14.5,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+              "transferSize": 1775,
+              "encodedBodySize": 1475,
+              "decodedBodySize": 1475,
+              "ttfb": 13.700000002980232,
+              "duration": 14.5,
+              "headers": {
+                "server-timing": "tmdb;dur=9, edge;dur=11",
+                "x-pattern": "proxy",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "32"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2072,
+          "apiRequests": 1,
+          "transferSize": 1775,
+          "encodedBodySize": 1475,
+          "decodedBodySize": 1475,
+          "ttfb": 14.799999997019768,
+          "duration": 16.299999997019768,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+              "transferSize": 1775,
+              "encodedBodySize": 1475,
+              "decodedBodySize": 1475,
+              "ttfb": 14.799999997019768,
+              "duration": 16.299999997019768,
+              "headers": {
+                "server-timing": "tmdb;dur=9, edge;dur=11",
+                "x-pattern": "proxy",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "34"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2066,
+          "apiRequests": 1,
+          "transferSize": 1775,
+          "encodedBodySize": 1475,
+          "decodedBodySize": 1475,
+          "ttfb": 13.5,
+          "duration": 14.799999997019768,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+              "transferSize": 1775,
+              "encodedBodySize": 1475,
+              "decodedBodySize": 1475,
+              "ttfb": 13.5,
+              "duration": 14.799999997019768,
+              "headers": {
+                "server-timing": "tmdb;dur=9, edge;dur=11",
+                "x-pattern": "proxy",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "36"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2068,
+          "apiRequests": 1,
+          "transferSize": 1775,
+          "encodedBodySize": 1475,
+          "decodedBodySize": 1475,
+          "ttfb": 17.200000002980232,
+          "duration": 18.099999994039536,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+              "transferSize": 1775,
+              "encodedBodySize": 1475,
+              "decodedBodySize": 1475,
+              "ttfb": 17.200000002980232,
+              "duration": 18.099999994039536,
+              "headers": {
+                "server-timing": "tmdb;dur=9, edge;dur=11",
+                "x-pattern": "proxy",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "38"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2056,
+          "apiRequests": 1,
+          "transferSize": 1775,
+          "encodedBodySize": 1475,
+          "decodedBodySize": 1475,
+          "ttfb": 16.400000005960464,
+          "duration": 17.5,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/movies?q=matrix",
+              "transferSize": 1775,
+              "encodedBodySize": 1475,
+              "decodedBodySize": 1475,
+              "ttfb": 16.400000005960464,
+              "duration": 17.5,
+              "headers": {
+                "server-timing": "tmdb;dur=9, edge;dur=11",
+                "x-pattern": "proxy",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "40"
+              }
+            }
+          ]
+        }
+      ],
+      "warmSummary": {
+        "apiRequestsPerLoad": 1,
+        "decodedBodySizePerLoad": 1475,
+        "ttfbP50": 14.799999997019768,
+        "ttfbP95": 17.200000002980232,
+        "durationP50": 16.299999997019768
+      }
+    },
+    {
+      "path": "/patterns/aggregate",
+      "url": "https://main--eds-api-poc--forexlead.aem.live/patterns/aggregate",
+      "skipped": false,
+      "har": "evidence/har/patterns-aggregate.har",
+      "screenshot": "evidence/screenshots/patterns-aggregate.png",
+      "cold": {
+        "status": 200,
+        "wallMs": 2471,
+        "apiRequests": 1,
+        "transferSize": 1222,
+        "encodedBodySize": 922,
+        "decodedBodySize": 922,
+        "ttfb": 17.299999997019768,
+        "duration": 54.599999994039536,
+        "requests": [
+          {
+            "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+            "transferSize": 1222,
+            "encodedBodySize": 922,
+            "decodedBodySize": 922,
+            "ttfb": 17.299999997019768,
+            "duration": 54.599999994039536,
+            "headers": {
+              "server-timing": "tmdb;dur=19, weather;dur=442, pokemon;dur=22, edge;dur=451",
+              "x-pattern": "aggregate",
+              "x-cache-mode": "cached",
+              "x-fallback": null,
+              "x-original-bytes": null,
+              "x-transformed-bytes": null,
+              "age": "113"
+            }
+          }
+        ]
+      },
+      "warm": [
+        {
+          "status": 200,
+          "wallMs": 2073,
+          "apiRequests": 1,
+          "transferSize": 1215,
+          "encodedBodySize": 915,
+          "decodedBodySize": 915,
+          "ttfb": 13.799999997019768,
+          "duration": 14.599999994039536,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+              "transferSize": 1215,
+              "encodedBodySize": 915,
+              "decodedBodySize": 915,
+              "ttfb": 13.799999997019768,
+              "duration": 14.599999994039536,
+              "headers": {
+                "server-timing": "tmdb;dur=3, weather;dur=4, pokemon;dur=15, edge;dur=24",
+                "x-pattern": "aggregate",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "2"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2063,
+          "apiRequests": 1,
+          "transferSize": 1215,
+          "encodedBodySize": 915,
+          "decodedBodySize": 915,
+          "ttfb": 15.400000005960464,
+          "duration": 16.400000005960464,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+              "transferSize": 1215,
+              "encodedBodySize": 915,
+              "decodedBodySize": 915,
+              "ttfb": 15.400000005960464,
+              "duration": 16.400000005960464,
+              "headers": {
+                "server-timing": "tmdb;dur=3, weather;dur=4, pokemon;dur=15, edge;dur=24",
+                "x-pattern": "aggregate",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "4"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2061,
+          "apiRequests": 1,
+          "transferSize": 1215,
+          "encodedBodySize": 915,
+          "decodedBodySize": 915,
+          "ttfb": 17.5,
+          "duration": 18.399999991059303,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+              "transferSize": 1215,
+              "encodedBodySize": 915,
+              "decodedBodySize": 915,
+              "ttfb": 17.5,
+              "duration": 18.399999991059303,
+              "headers": {
+                "server-timing": "tmdb;dur=3, weather;dur=4, pokemon;dur=15, edge;dur=24",
+                "x-pattern": "aggregate",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "6"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2068,
+          "apiRequests": 1,
+          "transferSize": 1215,
+          "encodedBodySize": 915,
+          "decodedBodySize": 915,
+          "ttfb": 17.400000005960464,
+          "duration": 18.599999994039536,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+              "transferSize": 1215,
+              "encodedBodySize": 915,
+              "decodedBodySize": 915,
+              "ttfb": 17.400000005960464,
+              "duration": 18.599999994039536,
+              "headers": {
+                "server-timing": "tmdb;dur=3, weather;dur=4, pokemon;dur=15, edge;dur=24",
+                "x-pattern": "aggregate",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "8"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2065,
+          "apiRequests": 1,
+          "transferSize": 1215,
+          "encodedBodySize": 915,
+          "decodedBodySize": 915,
+          "ttfb": 16,
+          "duration": 17.200000002980232,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/dashboard?lat=35.79&lon=-78.78",
+              "transferSize": 1215,
+              "encodedBodySize": 915,
+              "decodedBodySize": 915,
+              "ttfb": 16,
+              "duration": 17.200000002980232,
+              "headers": {
+                "server-timing": "tmdb;dur=3, weather;dur=4, pokemon;dur=15, edge;dur=24",
+                "x-pattern": "aggregate",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "warmSummary": {
+        "apiRequestsPerLoad": 1,
+        "decodedBodySizePerLoad": 915,
+        "ttfbP50": 16,
+        "ttfbP95": 17.5,
+        "durationP50": 17.200000002980232
+      }
+    },
+    {
+      "path": "/patterns/transform",
+      "url": "https://main--eds-api-poc--forexlead.aem.live/patterns/transform",
+      "skipped": false,
+      "har": "evidence/har/patterns-transform.har",
+      "screenshot": "evidence/screenshots/patterns-transform.png",
+      "cold": {
+        "status": 200,
+        "wallMs": 2276,
+        "apiRequests": 1,
+        "transferSize": 514,
+        "encodedBodySize": 214,
+        "decodedBodySize": 214,
+        "ttfb": 16,
+        "duration": 57.099999994039536,
+        "requests": [
+          {
+            "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+            "transferSize": 514,
+            "encodedBodySize": 214,
+            "decodedBodySize": 214,
+            "ttfb": 16,
+            "duration": 57.099999994039536,
+            "headers": {
+              "server-timing": "pokemon;dur=29, edge;dur=42",
+              "x-pattern": "transform",
+              "x-cache-mode": "cached",
+              "x-fallback": null,
+              "x-original-bytes": "290912",
+              "x-transformed-bytes": "214",
+              "age": "113"
+            }
+          }
+        ]
+      },
+      "warm": [
+        {
+          "status": 200,
+          "wallMs": 2054,
+          "apiRequests": 1,
+          "transferSize": 514,
+          "encodedBodySize": 214,
+          "decodedBodySize": 214,
+          "ttfb": 15.5,
+          "duration": 16.200000002980232,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+              "transferSize": 514,
+              "encodedBodySize": 214,
+              "decodedBodySize": 214,
+              "ttfb": 15.5,
+              "duration": 16.200000002980232,
+              "headers": {
+                "server-timing": "pokemon;dur=20, edge;dur=29",
+                "x-pattern": "transform",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": "290912",
+                "x-transformed-bytes": "214",
+                "age": "2"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2055,
+          "apiRequests": 1,
+          "transferSize": 514,
+          "encodedBodySize": 214,
+          "decodedBodySize": 214,
+          "ttfb": 16.200000002980232,
+          "duration": 17.200000002980232,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+              "transferSize": 514,
+              "encodedBodySize": 214,
+              "decodedBodySize": 214,
+              "ttfb": 16.200000002980232,
+              "duration": 17.200000002980232,
+              "headers": {
+                "server-timing": "pokemon;dur=20, edge;dur=29",
+                "x-pattern": "transform",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": "290912",
+                "x-transformed-bytes": "214",
+                "age": "4"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2063,
+          "apiRequests": 1,
+          "transferSize": 514,
+          "encodedBodySize": 214,
+          "decodedBodySize": 214,
+          "ttfb": 12.099999994039536,
+          "duration": 13.299999997019768,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+              "transferSize": 514,
+              "encodedBodySize": 214,
+              "decodedBodySize": 214,
+              "ttfb": 12.099999994039536,
+              "duration": 13.299999997019768,
+              "headers": {
+                "server-timing": "pokemon;dur=20, edge;dur=29",
+                "x-pattern": "transform",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": "290912",
+                "x-transformed-bytes": "214",
+                "age": "6"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2066,
+          "apiRequests": 1,
+          "transferSize": 514,
+          "encodedBodySize": 214,
+          "decodedBodySize": 214,
+          "ttfb": 18,
+          "duration": 19.799999997019768,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+              "transferSize": 514,
+              "encodedBodySize": 214,
+              "decodedBodySize": 214,
+              "ttfb": 18,
+              "duration": 19.799999997019768,
+              "headers": {
+                "server-timing": "pokemon;dur=20, edge;dur=29",
+                "x-pattern": "transform",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": "290912",
+                "x-transformed-bytes": "214",
+                "age": "8"
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2068,
+          "apiRequests": 1,
+          "transferSize": 514,
+          "encodedBodySize": 214,
+          "decodedBodySize": 214,
+          "ttfb": 17,
+          "duration": 18,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/lite?id=25",
+              "transferSize": 514,
+              "encodedBodySize": 214,
+              "decodedBodySize": 214,
+              "ttfb": 17,
+              "duration": 18,
+              "headers": {
+                "server-timing": "pokemon;dur=20, edge;dur=29",
+                "x-pattern": "transform",
+                "x-cache-mode": "cached",
+                "x-fallback": null,
+                "x-original-bytes": "290912",
+                "x-transformed-bytes": "214",
+                "age": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "warmSummary": {
+        "apiRequestsPerLoad": 1,
+        "decodedBodySizePerLoad": 214,
+        "ttfbP50": 16.200000002980232,
+        "ttfbP95": 18,
+        "durationP50": 17.200000002980232
+      }
+    },
+    {
+      "path": "/patterns/failover",
+      "url": "https://main--eds-api-poc--forexlead.aem.live/patterns/failover",
+      "skipped": false,
+      "har": "evidence/har/patterns-failover.har",
+      "screenshot": "evidence/screenshots/patterns-failover.png",
+      "cold": {
+        "status": 200,
+        "wallMs": 2499,
+        "apiRequests": 1,
+        "transferSize": 403,
+        "encodedBodySize": 103,
+        "decodedBodySize": 103,
+        "ttfb": 321.79999999701977,
+        "duration": 364.6000000089407,
+        "requests": [
+          {
+            "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+            "transferSize": 403,
+            "encodedBodySize": 103,
+            "decodedBodySize": 103,
+            "ttfb": 321.79999999701977,
+            "duration": 364.6000000089407,
+            "headers": {
+              "server-timing": "upstream;dur=49, edge;dur=49",
+              "x-pattern": "failover",
+              "x-cache-mode": null,
+              "x-fallback": "none",
+              "x-original-bytes": null,
+              "x-transformed-bytes": null,
+              "age": null
+            }
+          }
+        ]
+      },
+      "warm": [
+        {
+          "status": 200,
+          "wallMs": 2057,
+          "apiRequests": 1,
+          "transferSize": 403,
+          "encodedBodySize": 103,
+          "decodedBodySize": 103,
+          "ttfb": 23.799999997019768,
+          "duration": 24.700000002980232,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+              "transferSize": 403,
+              "encodedBodySize": 103,
+              "decodedBodySize": 103,
+              "ttfb": 23.799999997019768,
+              "duration": 24.700000002980232,
+              "headers": {
+                "server-timing": "upstream;dur=2, edge;dur=2",
+                "x-pattern": "failover",
+                "x-cache-mode": null,
+                "x-fallback": "none",
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": null
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2056,
+          "apiRequests": 1,
+          "transferSize": 403,
+          "encodedBodySize": 103,
+          "decodedBodySize": 103,
+          "ttfb": 22.099999994039536,
+          "duration": 23.19999998807907,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+              "transferSize": 403,
+              "encodedBodySize": 103,
+              "decodedBodySize": 103,
+              "ttfb": 22.099999994039536,
+              "duration": 23.19999998807907,
+              "headers": {
+                "server-timing": "upstream;dur=3, edge;dur=4",
+                "x-pattern": "failover",
+                "x-cache-mode": null,
+                "x-fallback": "none",
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": null
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2327,
+          "apiRequests": 1,
+          "transferSize": 403,
+          "encodedBodySize": 103,
+          "decodedBodySize": 103,
+          "ttfb": 280,
+          "duration": 281.3999999910593,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+              "transferSize": 403,
+              "encodedBodySize": 103,
+              "decodedBodySize": 103,
+              "ttfb": 280,
+              "duration": 281.3999999910593,
+              "headers": {
+                "server-timing": "upstream;dur=261, edge;dur=262",
+                "x-pattern": "failover",
+                "x-cache-mode": null,
+                "x-fallback": "none",
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": null
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2055,
+          "apiRequests": 1,
+          "transferSize": 403,
+          "encodedBodySize": 103,
+          "decodedBodySize": 103,
+          "ttfb": 22.600000008940697,
+          "duration": 23.5,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+              "transferSize": 403,
+              "encodedBodySize": 103,
+              "decodedBodySize": 103,
+              "ttfb": 22.600000008940697,
+              "duration": 23.5,
+              "headers": {
+                "server-timing": "upstream;dur=3, edge;dur=4",
+                "x-pattern": "failover",
+                "x-cache-mode": null,
+                "x-fallback": "none",
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": null
+              }
+            }
+          ]
+        },
+        {
+          "status": 200,
+          "wallMs": 2058,
+          "apiRequests": 1,
+          "transferSize": 403,
+          "encodedBodySize": 103,
+          "decodedBodySize": 103,
+          "ttfb": 20.799999997019768,
+          "duration": 21.700000002980232,
+          "requests": [
+            {
+              "url": "https://publish-p24773-e1511008.adobeaemcloud.com/api/resilient?mode=ok",
+              "transferSize": 403,
+              "encodedBodySize": 103,
+              "decodedBodySize": 103,
+              "ttfb": 20.799999997019768,
+              "duration": 21.700000002980232,
+              "headers": {
+                "server-timing": "upstream;dur=3, edge;dur=3",
+                "x-pattern": "failover",
+                "x-cache-mode": null,
+                "x-fallback": "none",
+                "x-original-bytes": null,
+                "x-transformed-bytes": null,
+                "age": null
+              }
+            }
+          ]
+        }
+      ],
+      "warmSummary": {
+        "apiRequestsPerLoad": 1,
+        "decodedBodySizePerLoad": 103,
+        "ttfbP50": 22.600000008940697,
+        "ttfbP95": 280,
+        "durationP50": 23.5
+      }
+    }
+  ],
+  "credentialCheck": {
+    "harFiles": [
+      "evidence/har/patterns-proxy.har",
+      "evidence/har/patterns-aggregate.har",
+      "evidence/har/patterns-transform.har",
+      "evidence/har/patterns-failover.har"
+    ],
+    "entries": 678,
+    "tokenHits": 0,
+    "bearerHits": 0,
+    "hits": [],
+    "pass": true
+  },
+  "api": [
+    {
+      "route": "/api/health",
+      "warm": {
+        "runs": [
+          {
+            "ttfb": 287,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 25,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 33,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 58,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 58,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 40,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 23,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 44,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 25,
+            "status": 200,
+            "cacheMode": null
+          }
+        ],
+        "p50": 24,
+        "p95": 58,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "edge;dur=0",
+        "lastCacheMode": null
+      },
+      "fresh": {
+        "runs": [
+          {
+            "ttfb": 26,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 52,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 23,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 22,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 68,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 37,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 25,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": null
+          },
+          {
+            "ttfb": 22,
+            "status": 200,
+            "cacheMode": null
+          }
+        ],
+        "p50": 21,
+        "p95": 52,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "edge;dur=1",
+        "lastCacheMode": null
+      }
+    },
+    {
+      "route": "/api/movie?id=603",
+      "warm": {
+        "runs": [
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 22,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          }
+        ],
+        "p50": 16,
+        "p95": 19,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=6, edge;dur=8",
+        "lastCacheMode": "cached"
+      },
+      "fresh": {
+        "runs": [
+          {
+            "ttfb": 314,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 272,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 85,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 376,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 71,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 421,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 408,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 68,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 98,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 29,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 32,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 462,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 28,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 24,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 790,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 33,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 126,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 121,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 48,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 28,
+            "status": 200,
+            "cacheMode": "fresh"
+          }
+        ],
+        "p50": 85,
+        "p95": 462,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=3, edge;dur=3",
+        "lastCacheMode": "fresh"
+      }
+    },
+    {
+      "route": "/api/movies?q=matrix",
+      "warm": {
+        "runs": [
+          {
+            "ttfb": 21,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 23,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 26,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 55,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 25,
+            "status": 200,
+            "cacheMode": "cached"
+          }
+        ],
+        "p50": 16,
+        "p95": 26,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=10, edge;dur=12",
+        "lastCacheMode": "cached"
+      },
+      "fresh": {
+        "runs": [
+          {
+            "ttfb": 343,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 64,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 26,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 293,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 29,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 191,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 193,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 63,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 175,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 141,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 125,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 26,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 364,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 48,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 176,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 51,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 134,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 78,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 105,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 26,
+            "status": 200,
+            "cacheMode": "fresh"
+          }
+        ],
+        "p50": 105,
+        "p95": 343,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=3, edge;dur=5",
+        "lastCacheMode": "fresh"
+      }
+    },
+    {
+      "route": "/api/dashboard",
+      "warm": {
+        "runs": [
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 25,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 23,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 19,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 20,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          }
+        ],
+        "p50": 17,
+        "p95": 23,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=7, weather;dur=438, pokemon;dur=22, edge;dur=449",
+        "lastCacheMode": "cached"
+      },
+      "fresh": {
+        "runs": [
+          {
+            "ttfb": 558,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 647,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 512,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 339,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 535,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 168,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 829,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 666,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 835,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 303,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 558,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 279,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 546,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 99,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 151,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 618,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 541,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 778,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 201,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 486,
+            "status": 200,
+            "cacheMode": "fresh"
+          }
+        ],
+        "p50": 535,
+        "p95": 829,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "tmdb;dur=10, weather;dur=453, pokemon;dur=60, edge;dur=463",
+        "lastCacheMode": "fresh"
+      }
+    },
+    {
+      "route": "/api/lite?id=25",
+      "warm": {
+        "runs": [
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 29,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 14,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 29,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 15,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 18,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 16,
+            "status": 200,
+            "cacheMode": "cached"
+          },
+          {
+            "ttfb": 17,
+            "status": 200,
+            "cacheMode": "cached"
+          }
+        ],
+        "p50": 16,
+        "p95": 29,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "pokemon;dur=17, edge;dur=28",
+        "lastCacheMode": "cached"
+      },
+      "fresh": {
+        "runs": [
+          {
+            "ttfb": 173,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 209,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 63,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 370,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 383,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 140,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 72,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 126,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 161,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 107,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 383,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 69,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 146,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 52,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 187,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 105,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 127,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 106,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 105,
+            "status": 200,
+            "cacheMode": "fresh"
+          },
+          {
+            "ttfb": 183,
+            "status": 200,
+            "cacheMode": "fresh"
+          }
+        ],
+        "p50": 127,
+        "p95": 383,
+        "statuses": [
+          200
+        ],
+        "lastServerTiming": "pokemon;dur=101, edge;dur=110",
+        "lastCacheMode": "fresh"
+      }
+    }
+  ]
+}
