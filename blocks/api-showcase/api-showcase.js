@@ -754,8 +754,8 @@ const LAB_QUOTE_TTL_S = 10;
 const LAB_PURGE_COMMAND = './scripts/purge.sh both product-603 "/api/cache/product?id=603"';
 /**
  * Cache headers shown under each card's code. Surrogate-Control and Surrogate-Key never reach
- * the browser (the CDN strips them); X-Backend-Calls is deliberately left out — it's an
- * estimate, and the cards' evidence is the timestamps.
+ * the browser (the CDN strips them). Card C shows its backend-call count from the body's
+ * per-ingredient HIT/MISS instead of X-Backend-Calls; both come from the same Fastly signal.
  */
 const LAB_CODE_HEADERS = ['Age', 'Cache-Control', 'X-Cache-Mode', 'X-Fetched-At', 'Server-Timing'];
 const KEY_LINE_MARK = '// <-- this line';
@@ -1129,7 +1129,7 @@ function buildMypageCard(apiBase, lab) {
   const tbody = el('tbody');
   table.append(thead, tbody);
   tableWrap.append(table);
-  const timestampsNote = el('p', 'cache-lab-note', 'Ingredient columns show each ingredient\'s upstream timestamp. The same timestamp across visitors means the same cached copy.');
+  const timestampsNote = el('p', 'cache-lab-note', 'Ingredient columns: Fastly\'s cache state for that fetch, then its upstream Date as supporting detail. Date can move on a cache hit, so it doesn\'t prove two visitors got the same copy; HIT/MISS does.');
   const neverCached = el('p', 'cache-lab-policy', '');
   const readout = buildReadout();
   const status = buildStatus();
@@ -1148,14 +1148,19 @@ function buildMypageCard(apiBase, lab) {
 
   function summarise(visits) {
     const ok = visits.filter((v) => v.resp?.ok && v.data?.ingredients);
-    const stamp = (v, key) => v.data.ingredients[key]?.fetchedAt ?? 'error';
     const pages = new Set(ok.map((v) => v.data.tier)).size;
-    const sets = new Set(ok.map((v) => LAB_INGREDIENTS.map(({ key }) => stamp(v, key)).join('|'))).size;
+    // Each ingredient's `cache` is Fastly's own HIT/MISS for that fetch (docs/cache-lab.md,
+    // "How X-Backend-Calls is counted"); a MISS is a call that went on to the backend.
+    const states = ok.flatMap((v) => LAB_INGREDIENTS
+      .map(({ key }) => v.data.ingredients[key]?.cache));
+    const known = states.length > 0 && states.every((s) => s === 'hit' || s === 'miss');
+    const calls = states.filter((s) => s === 'miss').length;
+    const callText = known ? `${calls} backend call${calls === 1 ? '' : 's'}` : 'backend calls unknown';
     headline.textContent = `${visits.length} visitor${visits.length === 1 ? '' : 's'}, `
-      + `${pages} response${pages === 1 ? '' : 's'}, `
-      + `${sets} set${sets === 1 ? '' : 's'} of backend calls`;
+      + `${pages} response${pages === 1 ? '' : 's'}, ${callText}`;
     detail.textContent = ok.length
-      ? `Distinct upstream timestamps: ${LAB_INGREDIENTS.map(({ key, label }) => `${label.toLowerCase()} ${new Set(ok.map((v) => stamp(v, key))).size}`).join(' · ')}.`
+      ? `Out of ${states.length} ingredient fetches, ${states.filter((s) => s === 'hit').length} were answered by Fastly's cache (HIT) and ${calls} went to the backend (MISS). Per ingredient: `
+        + `${LAB_INGREDIENTS.map(({ key, label }) => `${label.toLowerCase()} ${ok.filter((v) => v.data.ingredients[key]?.cache === 'miss').length}`).join(' · ')}.`
         + `${ok.length < visits.length ? ` ${visits.length - ok.length} visitor(s) got no page.` : ''}`
       : 'No visitor got a page.';
 
@@ -1181,7 +1186,8 @@ function buildMypageCard(apiBase, lab) {
       row.append(el('td', null, formatMs(visit.ms)));
       LAB_INGREDIENTS.forEach(({ key }) => {
         const ing = visit.data.ingredients[key];
-        const td = el('td', null, ing?.status === 'ok' ? formatClock(ing.fetchedAt) : 'error');
+        const state = ing?.cache === 'hit' || ing?.cache === 'miss' ? ing.cache.toUpperCase() : '?';
+        const td = el('td', null, ing?.status === 'ok' ? `${state} · ${formatClock(ing.fetchedAt)}` : `${state} · error`);
         if (ing?.fetchedAt) td.title = ing.fetchedAt;
         row.append(td);
       });
