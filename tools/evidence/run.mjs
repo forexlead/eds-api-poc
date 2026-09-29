@@ -27,7 +27,7 @@ const SHOTS = join(OUT, 'screenshots');
 const HARS = join(OUT, 'har');
 
 const SITE_URL = (process.env.SITE_URL || 'https://main--eds-api-poc--forexlead.aem.live').replace(/\/+$/, '');
-const API_BASE = (process.env.API_BASE || 'https://publish-p24773-e1511008.adobeaemcloud.com').replace(/\/+$/, '');
+const API_BASE = (process.env.API_BASE || 'https://publish-p24773-e1522172.adobeaemcloud.com').replace(/\/+$/, '');
 
 const PAGES = ['/patterns/proxy', '/patterns/aggregate', '/patterns/transform', '/patterns/failover'];
 const WARM_LOADS = 5;

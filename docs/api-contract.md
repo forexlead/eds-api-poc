@@ -3,9 +3,9 @@
 Shared contract between the edge function (`eds-api-poc-edge`) and the EDS block (`eds-api-poc`). Both sides build against this; change it here first.
 
 Base URL
-- **Deployed (current path):** `https://publish-p24773-e1511008.adobeaemcloud.com/api/...` — Adobe-managed CDN of the sandbox **stage** environment (program 24773, env e1511008). The EDS site (`*.aem.page` / `*.aem.live` / `localhost:3000`) calls it **cross-origin** → CORS rules below apply.
+- **Deployed (current path):** `https://publish-p24773-e1522172.adobeaemcloud.com/api/...` — Adobe-managed CDN of the sandbox **dev** environment (program 24773, env e1522172). The EDS site (`*.aem.page` / `*.aem.live` / `localhost:3000`) calls it **cross-origin** → CORS rules below apply.
 - Local function dev: `http://127.0.0.1:7676`
-- Routing: `config/cdn.yaml` (envTypes: stage) sends `^/api/(health|resilient)$` (skipCache) and `^/api/(movies|movie|dashboard|lite)$` (CDN-cacheable) to `edgefunction-api-poc`
+- Routing: `config/cdn.yaml` (envTypes: dev) sends `^/api/(health|resilient)$` (skipCache), `^/api/(movies|movie|dashboard|lite)$` (CDN-cacheable) and `^/api/cache/(product|stock|mypage|quote)$` (CDN-cacheable, Cache Lab — see the edge repo's `docs/cache-lab.md`) to `edgefunction-api-poc`
 - Future (production program + custom domain): same-origin `https://edspoc.edcfunctions.lol/api/...` — sandbox programs do not support custom domains.
 
 ## Common response rules (every route)
@@ -13,7 +13,7 @@ Base URL
 |---|---|
 | `Content-Type` | `application/json; charset=utf-8` |
 | `Access-Control-Allow-Origin` | echo request `Origin` if it matches `^https://[a-z0-9-]+--eds-api-poc--[a-z0-9-]+\.aem\.(page\|live)$` or `http://localhost:3000`; otherwise omit |
-| `Access-Control-Expose-Headers` | `Server-Timing, X-Pattern, X-Fallback, X-Original-Bytes, X-Transformed-Bytes, X-Fetched-At, X-Backend-Age, Age` |
+| `Access-Control-Expose-Headers` | `Server-Timing, X-Pattern, X-Fallback, X-Original-Bytes, X-Transformed-Bytes, X-Fetched-At, X-Backend-Age, X-Cache-Mode, X-Backend-Calls, Age` |
 | `Timing-Allow-Origin` | `*` (lets the browser Resource Timing API report sizes/timings cross-origin) |
 | `Vary` | `Origin` |
 | `X-Pattern` | `proxy` \| `aggregate` \| `transform` \| `failover` \| `health` |

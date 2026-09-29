@@ -17,9 +17,11 @@
 
 import { readBlockConfig } from '../../scripts/aem.js';
 import { getApiBase } from '../../scripts/api-config.js';
-import { createMetricsPanel, formatBytes, formatMs } from '../../scripts/metrics.js';
+import {
+  createMetricsPanel, formatBytes, formatMs, parseServerTiming,
+} from '../../scripts/metrics.js';
 
-const VARIANTS = ['proxy', 'aggregate', 'transform', 'failover'];
+const VARIANTS = ['proxy', 'aggregate', 'transform', 'failover', 'cache-lab'];
 const DEFAULT_QUERY = 'matrix';
 
 function variantOf(block) {
@@ -737,6 +739,628 @@ function decorateFailover(block, config) {
   load(initialMode);
 }
 
+/* ---------- cache-lab (Cache Lab, eds-api-poc-edge docs/cache-lab.md) ---------- */
+
+const LAB_PRODUCT_IDS = [603, 550];
+const LAB_STOCK_SKU = 1;
+const LAB_VISITOR_TIERS = ['gold', 'silver', 'bronze', 'gold', 'silver'];
+const LAB_INGREDIENTS = [
+  { key: 'product', label: 'Product' },
+  { key: 'prices', label: 'Prices' },
+  { key: 'topSellers', label: 'Top sellers' },
+];
+/** quote's Surrogate-Control max-age (docs/cache-lab.md). */
+const LAB_QUOTE_TTL_S = 10;
+const LAB_PURGE_COMMAND = './scripts/purge.sh both product-603 "/api/cache/product?id=603"';
+/**
+ * Cache headers shown under each card's code. Surrogate-Control and Surrogate-Key never reach
+ * the browser (the CDN strips them); X-Backend-Calls is deliberately left out — it's an
+ * estimate, and the cards' evidence is the timestamps.
+ */
+const LAB_CODE_HEADERS = ['Age', 'Cache-Control', 'X-Cache-Mode', 'X-Fetched-At', 'Server-Timing'];
+const KEY_LINE_MARK = '// <-- this line';
+
+let labCodeSeq = 0;
+
+/** `Age` header as seconds: null when absent, NaN when unreadable. */
+function ageOf(resp) {
+  const raw = resp.headers.get('Age');
+  return raw == null ? null : Number.parseInt(raw, 10);
+}
+
+/**
+ * The fetch-cache hit signal on single-upstream routes: the function made at least one backend
+ * fetch (Server-Timing has an entry besides `edge`) and none of them left Fastly's cache.
+ * Returns null when the headers needed to tell aren't there.
+ */
+function fetchCacheHit(resp) {
+  const calls = resp.headers.get('X-Backend-Calls');
+  if (calls == null || !/^\d+$/.test(calls)) return null;
+  const fetches = parseServerTiming(resp.headers.get('Server-Timing'))
+    .filter(({ name }) => name !== 'edge');
+  return fetches.length > 0 && Number(calls) === 0;
+}
+
+/**
+ * "Reading from": Age > 0 → the Adobe CDN answered. Otherwise the function answered, either
+ * from its fetch cache (`hit` true) or with a live backend call (`hit` false). Anything the
+ * headers don't settle is "unknown".
+ */
+function readingFrom(resp, hit) {
+  const age = ageOf(resp);
+  if (Number.isNaN(age)) return 'unknown';
+  if (age > 0) return `Adobe CDN (age ${age}s)`;
+  if (hit == null) return 'unknown';
+  return hit ? 'Edge function cache' : 'Live backend call';
+}
+
+/** `Tue, 29 Sep 2026 18:07:59 GMT` → `18:07:59 UTC`; unparsable values are shown as-is. */
+function formatClock(httpDate) {
+  if (!httpDate) return '—';
+  const date = new Date(httpDate);
+  return Number.isNaN(date.getTime()) ? httpDate : `${date.toISOString().slice(11, 19)} UTC`;
+}
+
+/**
+ * Runs a Cache Lab request. Resolves to `{ resp, data, ms, startedAt }` even on non-2xx;
+ * throws only when there's no response at all (network/CORS).
+ */
+async function fetchLab(url, { headers, fresh = false } = {}) {
+  const init = {};
+  if (headers) init.headers = headers;
+  if (fresh) init.cache = 'no-store';
+  const startedAt = window.performance.now();
+  const resp = await fetch(url, init);
+  let data = null;
+  try {
+    data = await resp.json();
+  } catch {
+    // non-JSON body (e.g. the CDN's HTML error page for a 5xx): callers see data === null
+  }
+  return {
+    resp, data, ms: window.performance.now() - startedAt, startedAt,
+  };
+}
+
+function buildLabButtons(labels) {
+  const group = el('div', 'api-showcase-presets cache-lab-controls');
+  const buttons = labels.map((label) => {
+    const btn = el('button', 'api-showcase-preset', label);
+    btn.type = 'button';
+    group.append(btn);
+    return btn;
+  });
+  return { group, buttons };
+}
+
+/** The three-line readout every card carries: Age, Reading from, Upstream timestamp. */
+function buildReadout() {
+  const list = el('dl', 'api-showcase-comparison cache-lab-readout');
+  const age = buildFailoverRow(list, 'Age');
+  const from = buildFailoverRow(list, 'Reading from');
+  const timestamp = buildFailoverRow(list, 'Upstream timestamp');
+
+  function fill(resp, { hit = null, timestampText } = {}) {
+    if (!resp) {
+      age.textContent = '—';
+      from.textContent = 'unknown';
+      timestamp.textContent = '—';
+      return;
+    }
+    const seconds = ageOf(resp);
+    if (seconds == null) age.textContent = 'absent';
+    else age.textContent = Number.isNaN(seconds) ? 'unknown' : `${seconds}s`;
+    from.textContent = readingFrom(resp, hit);
+    timestamp.textContent = timestampText ?? formatClock(resp.headers.get('X-Fetched-At'));
+  }
+
+  return { element: list, fill };
+}
+
+function renderSnippet(code, snippet) {
+  code.textContent = '';
+  snippet.split('\n').forEach((line) => {
+    const isKey = line.trimEnd().endsWith(KEY_LINE_MARK);
+    code.append(el('span', `cache-lab-code-line${isKey ? ' is-key' : ''}`, line || ' '));
+  });
+}
+
+/**
+ * "Show the code" toggle: the card's edge source (blocks/api-showcase/cache-snippets.js, loaded
+ * the first time it's opened) with the key line tinted, then the card's last cache headers.
+ */
+function buildCodePanel(snippetName) {
+  labCodeSeq += 1;
+  const panelId = `cache-lab-code-${labCodeSeq}`;
+  const wrap = el('div', 'cache-lab-code');
+
+  const toggle = el('button', 'cache-lab-code-toggle', 'Show the code');
+  toggle.type = 'button';
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-controls', panelId);
+
+  const panel = el('div', 'cache-lab-code-panel');
+  panel.id = panelId;
+  panel.hidden = true;
+  const pre = el('pre');
+  const code = el('code', null, 'Loading…');
+  pre.append(code);
+
+  const table = el('table', 'api-metrics-headers');
+  table.setAttribute('aria-label', 'Cache headers from the last response');
+  const tbody = el('tbody');
+  const rows = new Map(LAB_CODE_HEADERS.map((name) => {
+    const row = el('tr');
+    const th = el('th', null, name);
+    th.scope = 'row';
+    const td = el('td', null, '—');
+    row.append(th, td);
+    tbody.append(row);
+    return [name, td];
+  }));
+  table.append(tbody);
+
+  panel.append(
+    pre,
+    el('p', 'cache-lab-code-caption', 'Cache headers from this card\'s last response'),
+    table,
+    el('p', 'cache-lab-note', 'Surrogate-Control and Surrogate-Key never reach the browser: the CDN strips them. The policy is in the code above.'),
+  );
+  wrap.append(toggle, panel);
+
+  let loaded = false;
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Hide the code' : 'Show the code';
+    panel.hidden = !open;
+    if (open && !loaded) {
+      loaded = true;
+      import('./cache-snippets.js')
+        .then((snippets) => renderSnippet(code, snippets[snippetName]))
+        .catch(() => {
+          loaded = false;
+          code.textContent = 'Could not load the code snippet.';
+        });
+    }
+  });
+
+  function record(resp) {
+    rows.forEach((td, name) => {
+      td.textContent = resp?.headers.get(name) ?? (name === 'Age' ? 'absent' : '—');
+    });
+  }
+
+  return { element: wrap, record };
+}
+
+function buildLabCard(title, intro) {
+  const card = el('section', 'cache-lab-card');
+  card.append(el('h4', null, title));
+  if (intro) card.append(el('p', 'cache-lab-intro', intro));
+  return card;
+}
+
+/** Card A: long TTL at both layers; a purge of both layers resets one item. */
+function buildProductCard(apiBase, lab) {
+  const card = buildLabCard(
+    'Catalogue: long TTL, purge one item',
+    'Product records are cached for an hour, at the Adobe CDN and in the function\'s fetch cache. Load one repeatedly: the age climbs, the upstream timestamp stays put.',
+  );
+  const { group, buttons } = buildLabButtons(LAB_PRODUCT_IDS.map((id) => `Load product ${id}`));
+
+  const item = el('div', 'cache-lab-product');
+  item.append(el('p', 'cache-lab-placeholder', 'Loading product…'));
+  const readout = buildReadout();
+  const status = buildStatus();
+
+  const purge = el('div', 'cache-lab-purge');
+  purge.append(
+    el('p', 'cache-lab-purge-title', 'Reset product 603 (operator only)'),
+    el('p', null, 'A purge needs the CDN purge key, an operator credential, so it can\'t and mustn\'t run from this page. Run this in a terminal in the edge repo:'),
+  );
+  const commandRow = el('div', 'cache-lab-command');
+  const commandCode = el('code', null, LAB_PURGE_COMMAND);
+  const copy = el('button', 'api-showcase-preset', 'Copy');
+  copy.type = 'button';
+  copy.setAttribute('aria-label', 'Copy the purge command');
+  commandRow.append(commandCode, copy);
+  purge.append(
+    commandRow,
+    el('p', null, 'Why "both": a CDN purge alone leaves the function\'s fetch cache untouched. We measured it: after a CDN-only purge the next request missed the CDN (age 0), but the function answered from its fetch cache and the upstream timestamp didn\'t move. "both" purges the fetch cache, then the CDN copy.'),
+    el('p', null, 'Afterwards, Load product 603: age is back to 0 and the upstream timestamp jumps to now. Product 550 keeps its age.'),
+  );
+
+  const code = buildCodePanel('product');
+  card.append(group, item, readout.element, status, purge, code.element);
+
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(LAB_PURGE_COMMAND);
+      copy.textContent = 'Copied';
+    } catch {
+      // clipboard blocked (permissions/insecure context): select it for a manual copy instead
+      window.getSelection().selectAllChildren(commandCode);
+      copy.textContent = 'Press ⌘C / Ctrl+C';
+    }
+    setTimeout(() => { copy.textContent = 'Copy'; }, 2000);
+  });
+
+  let seq = 0;
+  async function load(id, opts) {
+    seq += 1;
+    const mine = seq;
+    status.textContent = `Loading product ${id}…`;
+    let result = null;
+    try {
+      result = await fetchLab(`${apiBase}/api/cache/product?id=${id}`, opts);
+      lab.record(result);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('api-showcase cache-lab: product request failed', err);
+    }
+    if (mine !== seq) return;
+    const { resp, data, ms } = result || {};
+    readout.fill(resp, { hit: resp ? fetchCacheHit(resp) : null });
+    code.record(resp);
+
+    item.textContent = '';
+    if (resp?.ok && data) {
+      if (data.poster) {
+        const img = el('img');
+        img.src = data.poster;
+        img.alt = '';
+        img.width = 62;
+        img.height = 93;
+        img.loading = 'lazy';
+        item.append(img);
+      }
+      const text = el('div');
+      text.append(
+        el('p', 'cache-lab-product-title', data.year ? `${data.title} (${data.year})` : data.title),
+        el('p', null, `Product ${data.id}`),
+      );
+      item.append(text);
+      status.textContent = `Product ${id} in ${formatMs(ms)}.`;
+    } else {
+      item.append(el('p', 'cache-lab-placeholder', 'No product data.'));
+      status.textContent = `Product ${id} unavailable${resp ? ` (HTTP ${resp.status})` : ''}.`;
+    }
+  }
+
+  buttons.forEach((btn, i) => btn.addEventListener('click', () => {
+    const id = LAB_PRODUCT_IDS[i];
+    lab.setLast((opts) => load(id, opts));
+    load(id);
+  }));
+
+  function start() {
+    const [id] = LAB_PRODUCT_IDS;
+    lab.setLast((opts) => load(id, opts));
+    load(id);
+  }
+
+  return { element: card, start };
+}
+
+/** Card B: short TTL + stale-while-revalidate; the reading is generated by the function. */
+function buildStockCard(apiBase, lab) {
+  const card = buildLabCard(
+    'Stock: short TTL with stale-while-revalidate',
+    'The function takes a stock reading each time it builds a response. Click Read stock repeatedly: a cached copy keeps its old reading, a refreshed one shows a new reading and time.',
+  );
+  const { group, buttons: [readBtn] } = buildLabButtons(['Read stock']);
+
+  const reading = el('div', 'cache-lab-reading');
+  const level = el('p', 'cache-lab-figure', '—');
+  const takenAt = el('p', 'cache-lab-figure-sub', 'reading taken —');
+  const change = el('p', 'cache-lab-change', '');
+  reading.append(level, takenAt, change);
+
+  const policy = el('p', 'cache-lab-policy', 'Policy: 20s fresh, 120s stale-while-revalidate.');
+  const readout = buildReadout();
+  const status = buildStatus();
+  const code = buildCodePanel('stock');
+  card.append(group, reading, policy, readout.element, status, code.element);
+
+  let previousReadingAt = null;
+
+  async function read(opts) {
+    status.textContent = 'Reading stock…';
+    let result = null;
+    try {
+      result = await fetchLab(`${apiBase}/api/cache/stock?id=${LAB_STOCK_SKU}`, opts);
+      lab.record(result);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('api-showcase cache-lab: stock request failed', err);
+    }
+    const { resp, data, ms } = result || {};
+    readout.fill(resp, { hit: resp ? fetchCacheHit(resp) : null });
+    code.record(resp);
+
+    if (!resp?.ok || !data) {
+      status.textContent = `Stock unavailable${resp ? ` (HTTP ${resp.status})` : ''}.`;
+      return;
+    }
+    level.textContent = `${data.level} in stock`;
+    takenAt.textContent = `reading taken ${formatClock(data.readingAt)}`;
+    if (previousReadingAt == null) {
+      change.textContent = 'First reading.';
+    } else if (data.readingAt === previousReadingAt) {
+      change.textContent = 'Same reading as last time: a cached copy.';
+    } else {
+      change.textContent = 'New reading since last time.';
+    }
+    change.classList.toggle('is-new', previousReadingAt != null && data.readingAt !== previousReadingAt);
+    previousReadingAt = data.readingAt;
+    status.textContent = `Stock read in ${formatMs(ms)}.`;
+  }
+
+  readBtn.addEventListener('click', () => {
+    lab.setLast(read);
+    read();
+  });
+
+  return { element: card, start: () => read() };
+}
+
+/** Card C: an uncached personalised response composed from cached, shared ingredients. */
+function buildMypageCard(apiBase, lab) {
+  const card = buildLabCard(
+    'Personalised page, cached ingredients',
+    'Every visitor gets a page built for their tier, and that page is never cached. The ingredients behind it (product, prices, top sellers) are the same for everyone, so the function caches those.',
+  );
+  const { group, buttons: [runBtn] } = buildLabButtons([`Simulate ${LAB_VISITOR_TIERS.length} visitors`]);
+
+  const headline = el('p', 'cache-lab-headline', 'Simulate the visitors to see how many backend calls they cost.');
+  const detail = el('p', 'cache-lab-note', '');
+  const tableWrap = el('div', 'cache-lab-table-wrap');
+  const table = el('table', 'cache-lab-table');
+  const head = el('tr');
+  ['#', 'Tier', 'Response time', ...LAB_INGREDIENTS.map(({ label }) => label)]
+    .forEach((label) => {
+      const th = el('th', null, label);
+      th.scope = 'col';
+      head.append(th);
+    });
+  const thead = el('thead');
+  thead.append(head);
+  const tbody = el('tbody');
+  table.append(thead, tbody);
+  tableWrap.append(table);
+  const timestampsNote = el('p', 'cache-lab-note', 'Ingredient columns show each ingredient\'s upstream timestamp. The same timestamp across visitors means the same cached copy.');
+  const neverCached = el('p', 'cache-lab-policy', '');
+  const readout = buildReadout();
+  const status = buildStatus();
+  const code = buildCodePanel('mypage');
+  card.append(
+    group,
+    headline,
+    detail,
+    tableWrap,
+    timestampsNote,
+    neverCached,
+    readout.element,
+    status,
+    code.element,
+  );
+
+  function summarise(visits) {
+    const ok = visits.filter((v) => v.resp?.ok && v.data?.ingredients);
+    const stamp = (v, key) => v.data.ingredients[key]?.fetchedAt ?? 'error';
+    const pages = new Set(ok.map((v) => v.data.tier)).size;
+    const sets = new Set(ok.map((v) => LAB_INGREDIENTS.map(({ key }) => stamp(v, key)).join('|'))).size;
+    headline.textContent = `${visits.length} visitor${visits.length === 1 ? '' : 's'}, `
+      + `${pages} response${pages === 1 ? '' : 's'}, `
+      + `${sets} set${sets === 1 ? '' : 's'} of backend calls`;
+    detail.textContent = ok.length
+      ? `Distinct upstream timestamps: ${LAB_INGREDIENTS.map(({ key, label }) => `${label.toLowerCase()} ${new Set(ok.map((v) => stamp(v, key))).size}`).join(' · ')}.`
+        + `${ok.length < visits.length ? ` ${visits.length - ok.length} visitor(s) got no page.` : ''}`
+      : 'No visitor got a page.';
+
+    const answered = visits.filter((v) => v.resp);
+    const cachedOnes = answered.filter((v) => v.resp.headers.has('Age')
+      || !/\bno-store\b/i.test(v.resp.headers.get('Cache-Control') || ''));
+    if (!answered.length) {
+      neverCached.textContent = '';
+    } else if (!cachedOnes.length) {
+      neverCached.textContent = `All ${answered.length} responses: no Age header, Cache-Control: no-store. The page itself was never cached.`;
+    } else {
+      neverCached.textContent = `${cachedOnes.length} of ${answered.length} responses carried an Age header or lacked Cache-Control: no-store.`;
+    }
+  }
+
+  function addRow(n, tier, visit) {
+    const row = el('tr');
+    row.append(el('td', null, String(n)), el('td', null, capitalize(tier)));
+    if (!visit.resp?.ok || !visit.data?.ingredients) {
+      row.append(el('td', null, visit.resp ? `HTTP ${visit.resp.status}` : 'no response'));
+      LAB_INGREDIENTS.forEach(() => row.append(el('td', null, '—')));
+    } else {
+      row.append(el('td', null, formatMs(visit.ms)));
+      LAB_INGREDIENTS.forEach(({ key }) => {
+        const ing = visit.data.ingredients[key];
+        const td = el('td', null, ing?.status === 'ok' ? formatClock(ing.fetchedAt) : 'error');
+        if (ing?.fetchedAt) td.title = ing.fetchedAt;
+        row.append(td);
+      });
+    }
+    tbody.append(row);
+  }
+
+  let running = false;
+  async function simulate(opts) {
+    if (running) return;
+    running = true;
+    runBtn.disabled = true;
+    tbody.textContent = '';
+    const visits = [];
+    for (let i = 0; i < LAB_VISITOR_TIERS.length; i += 1) {
+      const tier = LAB_VISITOR_TIERS[i];
+      status.textContent = `Visitor ${i + 1} of ${LAB_VISITOR_TIERS.length} (${tier})…`;
+      let visit = { resp: null, data: null, ms: NaN };
+      try {
+        // Sequential on purpose: each visitor arrives after the previous one was served.
+        // eslint-disable-next-line no-await-in-loop
+        visit = await fetchLab(`${apiBase}/api/cache/mypage?tier=${tier}`, opts);
+        lab.record(visit);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('api-showcase cache-lab: mypage request failed', err);
+      }
+      visits.push(visit);
+      addRow(i + 1, tier, visit);
+    }
+    summarise(visits);
+
+    const last = visits[visits.length - 1];
+    const ings = last.data?.ingredients ? Object.values(last.data.ingredients) : [];
+    // The body's own per-ingredient cache state; unknown unless every ingredient reports one.
+    const hit = ings.length && ings.every((x) => x.cache === 'hit' || x.cache === 'miss')
+      ? ings.every((x) => x.cache === 'hit')
+      : null;
+    readout.fill(last.resp, { hit, timestampText: 'per ingredient, in the table' });
+    code.record(last.resp);
+    status.textContent = 'Done.';
+    runBtn.disabled = false;
+    running = false;
+  }
+
+  runBtn.addEventListener('click', () => {
+    lab.setLast(simulate);
+    simulate();
+  });
+
+  return { element: card };
+}
+
+/** Card D: stale-if-error — the CDN serves its stale copy while the origin fails. */
+function buildQuoteCard(apiBase, lab) {
+  const card = buildLabCard(
+    'Backend outage: stale-if-error',
+    'The quote is fresh for 10s. After that, if the backend fails, the CDN may keep serving its last good copy for up to a day.',
+  );
+  const { group, buttons: [loadBtn, breakBtn, againBtn] } = buildLabButtons(['Load quote', 'Break the backend', 'Load again']);
+  breakBtn.setAttribute('aria-pressed', 'false');
+
+  const quoteBox = el('div', 'cache-lab-reading');
+  const price = el('p', 'cache-lab-figure', '—');
+  const quotedAt = el('p', 'cache-lab-figure-sub', 'quoted at —');
+  quoteBox.append(price, quotedAt);
+  const backend = el('p', 'cache-lab-backend', 'Backend: healthy');
+  const outcome = el('p', 'cache-lab-change', '');
+  const readout = buildReadout();
+  const status = buildStatus();
+  const contrast = el('p', 'cache-lab-note', 'Contrast with pattern 04 (Failover): there the function substitutes a bundled fallback when nothing is cached. Here the CDN covers for a failing origin with its own stale copy.');
+  const code = buildCodePanel('quote');
+  card.append(group, quoteBox, backend, outcome, readout.element, status, contrast, code.element);
+
+  let broken = false;
+  let lastGoodQuotedAt = null;
+
+  function describeBroken(resp, data) {
+    if (!resp) {
+      return 'The browser got no readable response: either the CDN had no stale copy and passed the backend\'s error through, or the browser\'s CORS preflight refused the X-Break header.';
+    }
+    if (!resp.ok || !data?.quotedAt) {
+      return `No stale copy to serve: the backend's error came through (HTTP ${resp.status}).`;
+    }
+    const age = ageOf(resp);
+    const unchanged = lastGoodQuotedAt != null && data.quotedAt === lastGoodQuotedAt;
+    if (Number.isFinite(age) && age > LAB_QUOTE_TTL_S && unchanged) {
+      return `Stale copy served: the data is unchanged (quoted at ${formatClock(data.quotedAt)}), the age is ${age}s, past the ${LAB_QUOTE_TTL_S}s TTL, and the backend is failing. The client still got a 200.`;
+    }
+    if (Number.isFinite(age) && age <= LAB_QUOTE_TTL_S) {
+      return `Age ${age}s is still inside the ${LAB_QUOTE_TTL_S}s TTL, so the CDN hasn't asked the backend yet. Wait until the age passes ${LAB_QUOTE_TTL_S}s, then load again.`;
+    }
+    return `HTTP ${resp.status}, age ${Number.isFinite(age) ? `${age}s` : 'absent'}, quoted at ${formatClock(data.quotedAt)}: this doesn't match the measured stale-if-error behaviour.`;
+  }
+
+  async function load(opts) {
+    status.textContent = broken ? 'Loading with the backend broken…' : 'Loading quote…';
+    let result = null;
+    try {
+      result = await fetchLab(`${apiBase}/api/cache/quote`, {
+        ...opts,
+        ...(broken ? { headers: { 'X-Break': '1' } } : {}),
+      });
+      lab.record(result);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('api-showcase cache-lab: quote request failed', err);
+    }
+    const { resp, data, ms } = result || {};
+    // quote has no backend fetch: with Age 0 the function generated it just now.
+    readout.fill(resp, { hit: resp ? false : null });
+    code.record(resp);
+
+    if (resp?.ok && data?.quotedAt) {
+      price.textContent = `${data.symbol} ${Number(data.price).toFixed(2)}`;
+      quotedAt.textContent = `quoted at ${formatClock(data.quotedAt)}`;
+      if (!broken) lastGoodQuotedAt = data.quotedAt;
+    }
+    outcome.textContent = broken ? describeBroken(resp, data) : '';
+    status.textContent = resp ? `HTTP ${resp.status} in ${formatMs(ms)}.` : 'No response.';
+  }
+
+  function run() {
+    lab.setLast(load);
+    load();
+  }
+
+  loadBtn.addEventListener('click', run);
+  againBtn.addEventListener('click', run);
+  breakBtn.addEventListener('click', () => {
+    broken = !broken;
+    breakBtn.setAttribute('aria-pressed', String(broken));
+    breakBtn.textContent = broken ? 'Backend broken (click to fix)' : 'Break the backend';
+    backend.textContent = broken
+      ? 'Backend: failing. Every request now sends X-Break: 1, so the function answers 503.'
+      : 'Backend: healthy';
+    card.classList.toggle('is-broken', broken);
+    outcome.textContent = '';
+  });
+
+  return { element: card, start: () => load() };
+}
+
+/**
+ * Wires up the Cache Lab variant: four cards, each showing one CDN caching behaviour of the
+ * `/api/cache/*` routes (eds-api-poc-edge docs/cache-lab.md), sharing one metrics panel whose
+ * "Run again" repeats the last card action.
+ */
+function decorateCacheLab(block, config) {
+  const apiBase = getApiBase();
+
+  block.innerHTML = '';
+  block.append(buildHeading(config.title || 'Cache Lab'));
+
+  const metrics = createMetricsPanel(apiBase, {
+    timingLabels: ['tmdb', 'product', 'prices', 'topSellers', 'edge'],
+  });
+  let last = null;
+  const lab = {
+    record: ({ resp, startedAt }) => metrics.record(resp, startedAt),
+    setLast: (action) => { last = action; },
+  };
+  metrics.onRunAgain(() => last?.({ fresh: true }));
+
+  const cards = [
+    buildProductCard(apiBase, lab),
+    buildStockCard(apiBase, lab),
+    buildMypageCard(apiBase, lab),
+    buildQuoteCard(apiBase, lab),
+  ];
+  const grid = el('div', 'cache-lab-grid');
+  cards.forEach(({ element }) => grid.append(element));
+  block.append(grid, metrics.element);
+
+  // Not awaited: the cards are already on the page; the fetches must not block rendering.
+  // mypage waits for its button: five visitors on page load would muddy the demo.
+  cards.forEach(({ start }) => start?.());
+}
+
 export default function decorate(block) {
   const config = readBlockConfig(block);
   const variant = variantOf(block);
@@ -748,6 +1372,8 @@ export default function decorate(block) {
     decorateAggregate(block, config);
   } else if (variant === 'transform') {
     decorateTransform(block, config);
+  } else if (variant === 'cache-lab') {
+    decorateCacheLab(block, config);
   } else {
     decorateFailover(block, config);
   }

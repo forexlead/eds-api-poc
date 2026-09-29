@@ -19,8 +19,8 @@ import { getMetadata } from './aem.js';
 /** Local edge function dev server (`aio aem edge-functions serve`, this repo's edge sibling). */
 const LOCAL_API_BASE = 'http://127.0.0.1:7676';
 
-/** Deployed sandbox stage environment (program 24773, env e1511008). */
-const DEFAULT_API_BASE = 'https://publish-p24773-e1511008.adobeaemcloud.com';
+/** Deployed sandbox dev environment (program 24773, env e1522172). */
+const DEFAULT_API_BASE = 'https://publish-p24773-e1522172.adobeaemcloud.com';
 
 /**
  * Resolves the API base URL. Precedence:
