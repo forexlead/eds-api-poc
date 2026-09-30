@@ -751,7 +751,26 @@ const LAB_INGREDIENTS = [
 ];
 /** quote's Surrogate-Control max-age (docs/cache-lab.md). */
 const LAB_QUOTE_TTL_S = 10;
-const LAB_PURGE_COMMAND = './scripts/purge.sh both product-603 "/api/cache/product?id=603"';
+const LAB_PURGE_CDN = './scripts/purge.sh key product-603';
+const LAB_PURGE_FETCH_CACHE = 'aio aem edge-functions purge-cache api-poc -k product-603 --soft';
+/** Card A's operator steps: the layers are cleared separately to show they do different things. */
+const LAB_PURGE_STEPS = [
+  {
+    title: 'CDN cache only',
+    command: LAB_PURGE_CDN,
+    effect: 'after Load, age is back to 0 but the upstream timestamp has not moved. The CDN dropped its copy and refetched from the function, which still had the data. The response looks fresh and isn\'t.',
+  },
+  {
+    title: 'Function fetch cache only',
+    command: LAB_PURGE_FETCH_CACHE,
+    effect: 'after Load, nothing changes. The CDN is still answering, so the request never reaches the function.',
+  },
+  {
+    title: 'Both, inner layer first',
+    command: `${LAB_PURGE_FETCH_CACHE}\n${LAB_PURGE_CDN}`,
+    effect: 'after Load, age is 0 and the timestamp jumps to now. Both layers were empty, so the request went CDN to function to backend.',
+  },
+];
 /**
  * Cache headers shown under each card's code. Surrogate-Control and Surrogate-Key never reach
  * the browser (the CDN strips them). Card C shows its backend-call count from the body's
@@ -957,34 +976,39 @@ function buildProductCard(apiBase, lab) {
   const purge = el('div', 'cache-lab-purge');
   purge.append(
     el('p', 'cache-lab-purge-title', 'Reset product 603 (operator only)'),
-    el('p', null, 'A purge needs the CDN purge key, an operator credential, so it can\'t and mustn\'t run from this page. Run this in a terminal in the edge repo:'),
+    el('p', null, 'A purge needs the CDN purge key, an operator credential, so it can\'t and mustn\'t run from this page. Run these in a terminal in the edge repo.'),
   );
-  const commandRow = el('div', 'cache-lab-command');
-  const commandCode = el('code', null, LAB_PURGE_COMMAND);
-  const copy = el('button', 'api-showcase-preset', 'Copy');
-  copy.type = 'button';
-  copy.setAttribute('aria-label', 'Copy the purge command');
-  commandRow.append(commandCode, copy);
+  const steps = el('ol', 'cache-lab-purge-steps');
+  LAB_PURGE_STEPS.forEach(({ title, command, effect }) => {
+    const step = el('li');
+    const commandRow = el('div', 'cache-lab-command');
+    const commandCode = el('code', null, command);
+    const copy = el('button', 'api-showcase-preset', 'Copy');
+    copy.type = 'button';
+    copy.setAttribute('aria-label', `Copy the command: ${title}`);
+    commandRow.append(commandCode, copy);
+    step.append(el('p', 'cache-lab-purge-title', title), commandRow, el('p', null, `Effect: ${effect}`));
+    steps.append(step);
+
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(command);
+        copy.textContent = 'Copied';
+      } catch {
+        // clipboard blocked (permissions/insecure context): select it for a manual copy instead
+        window.getSelection().selectAllChildren(commandCode);
+        copy.textContent = 'Press ⌘C / Ctrl+C';
+      }
+      setTimeout(() => { copy.textContent = 'Copy'; }, 2000);
+    });
+  });
   purge.append(
-    commandRow,
-    el('p', null, 'Why "both": a CDN purge alone leaves the function\'s fetch cache untouched. We measured it: after a CDN-only purge the next request missed the CDN (age 0), but the function answered from its fetch cache and the upstream timestamp didn\'t move. "both" purges the fetch cache, then the CDN copy.'),
-    el('p', null, 'Afterwards, Load product 603: age is back to 0 and the upstream timestamp jumps to now. Product 550 keeps its age.'),
+    steps,
+    el('p', null, 'Order matters. Clear the CDN first and the next request refills it from the fetch cache you are about to empty. Product 550 is untouched throughout.'),
   );
 
   const code = buildCodePanel('product');
   card.append(group, item, readout.element, status, purge, code.element);
-
-  copy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(LAB_PURGE_COMMAND);
-      copy.textContent = 'Copied';
-    } catch {
-      // clipboard blocked (permissions/insecure context): select it for a manual copy instead
-      window.getSelection().selectAllChildren(commandCode);
-      copy.textContent = 'Press ⌘C / Ctrl+C';
-    }
-    setTimeout(() => { copy.textContent = 'Copy'; }, 2000);
-  });
 
   let seq = 0;
   async function load(id, opts) {

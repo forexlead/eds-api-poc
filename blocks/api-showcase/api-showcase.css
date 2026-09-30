@@ -684,6 +684,16 @@
   background-color: var(--light-color);
   font-size: 13px;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.cache-lab-purge-steps {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.cache-lab-purge-steps li {
+  margin-bottom: 12px;
 }
 
 .cache-lab-code {
